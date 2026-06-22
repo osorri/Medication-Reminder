@@ -23,9 +23,9 @@ class NotificationService {
     final initializationSettings = InitializationSettings(
       android: const AndroidInitializationSettings('@mipmap/ic_launcher'),
       iOS: const DarwinInitializationSettings(
-        requestAlertPermission: false,
-        requestBadgePermission: false,
-        requestSoundPermission: false,
+        requestAlertPermission: true,
+        requestBadgePermission: true,
+        requestSoundPermission: true,
       ),
       macOS: const DarwinInitializationSettings(
         requestAlertPermission: false,
@@ -40,6 +40,10 @@ class NotificationService {
     );
 
     await _plugin
+        .resolvePlatformSpecificImplementation<IOSFlutterLocalNotificationsPlugin>()
+        ?.requestPermissions(alert: true, badge: true, sound: true);
+
+    await _plugin
         .resolvePlatformSpecificImplementation<AndroidFlutterLocalNotificationsPlugin>()
         ?.requestNotificationsPermission();
 
@@ -48,7 +52,6 @@ class NotificationService {
         ?.requestExactAlarmsPermission();
 
     final info = await FlutterTimezone.getLocalTimezone();
-    tz.initializeTimeZones();
     tz.setLocalLocation(tz.getLocation(info.identifier));
     _initialized = true;
   }
